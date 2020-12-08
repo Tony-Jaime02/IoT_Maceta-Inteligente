@@ -1,0 +1,292 @@
+<html>
+    <head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
+	   	<title> Jardin Inteligente </title>
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="sensores.css">
+        
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha256-t9UJPrESBeG2ojKTIcFLPGF7nHi2vEc7f5A2KpH/UBU=" crossorigin="anonymous"></script>
+
+        <script>
+            
+            var llamada= (id) => {
+                var valoresTemp = []
+            	var valoresLuz = []
+            	var valoresHumT = []
+            	var valoresHumA = []
+            	var valoresHora = []
+                var valoresFecha = []
+                $.ajax({
+                    url:'/equipo3/api/lectura/' + id,
+                    method: 'GET',
+                    success: (result) => {
+
+                    	result.forEach((element)=> {
+                            valoresHora.push(element.hora);
+                            valoresFecha.push(element.fecha);
+					   		valoresLuz.push(element.sens_luz);
+					   		valoresTemp.push(element.sens_tempA);
+					   		valoresHumA.push(element.sens_humA);
+					   		valoresHumT.push(element.sens_humT/10);    
+                        })
+                        
+                        valoresHora.reverse()
+                        valoresFecha.reverse()
+                        valoresLuz.reverse()
+                        valoresTemp.reverse()
+                        valoresHumA.reverse()
+                        valoresHumT.reverse()  
+
+                        
+                        //Grafica Luz
+		                var contenedor = document.getElementById("graficaLuz");
+		                    
+		                var grafica = new Chart(contenedor, {
+		                    type: 'line',
+		                    data: {
+		                        labels: valoresHora,
+		                        datasets: [{
+		                            label: 'Luz',
+		                            data: valoresLuz,
+		                            backgroundColor: 'rgba(0,0,0,0)',
+		                            borderColor: 'rgba(0,100,100,1)',
+		                            borderWidth: 2
+		                            }]
+		                        }
+		                })
+
+
+						//Grafica HumedadTierra
+		                var contenedor = document.getElementById("graficaHumT");
+		                    
+		                var grafica = new Chart(contenedor, {
+		                    type: 'line',
+		                    data: {
+		                        labels: valoresHora,
+		                        datasets: [{
+		                            label: 'Humedad Tierra',
+		                            data: valoresHumT,
+		                            backgroundColor: 'rgba(0,0,0,0)',
+		                            borderColor: 'rgba(0,100,100,1)',
+		                            borderWidth: 2
+		                            }]
+		                        }
+		                })
+
+		                //Grafica Temperatura
+		                var contenedor = document.getElementById("graficaTemp");
+		                    
+		                var grafica = new Chart(contenedor, {
+		                    type: 'line',
+		                    data: {
+		                        labels: valoresHora,
+		                        datasets: [{
+		                            label: 'Temperatura °C',
+		                            data: valoresTemp,
+		                            backgroundColor: 'rgba(0,0,0,0)',
+		                            borderColor: 'rgba(0,100,100,1)',
+		                            borderWidth: 2
+		                            }]
+		                        }
+		                })
+
+		                //Grafica Humedad Aire
+		                var contenedor = document.getElementById("graficaHumA");
+		                    
+		                var grafica = new Chart(contenedor, {
+		                    type: 'line',
+		                    data: {
+		                        labels: valoresHora,
+		                        datasets: [{
+		                            label: 'Humedad Aire',
+		                            data: valoresHumA,
+		                            backgroundColor: 'rgba(0,0,0,0)',
+		                            borderColor: 'rgba(0,100,100,1)',
+		                            borderWidth: 2
+		                            }]
+		                        }
+		                })	
+                    	//Texto luz    
+                        document.getElementById("txt1").innerHTML = "El ultimo valor es " + valoresLuz[4] + " en la fecha de " + valoresFecha[4]+ " a las " + valoresHora[4];
+                        //Texto humT
+                        document.getElementById("txt2").innerHTML = "El ultimo valor es " + valoresHumT[4] + "% en la fecha de " + valoresFecha[4]+ " a las " + valoresHora[4];
+                        //Texto temp
+                        document.getElementById("txt3").innerHTML = "El ultimo valor es " + valoresTemp[4] + "°C en la fecha de " + valoresFecha[4]+ " a las " + valoresHora[4];
+                        //Texto hum Aire
+                        document.getElementById("txt4").innerHTML = "El ultimo valor es " + valoresHumA[4] + "% en la fecha de " + valoresFecha[4]+ " a las " + valoresHora[4];
+                    
+                    },
+                    error: (xhr, status, error) => {
+                    
+                        console.log(error)
+                    
+                    }
+                    
+                })
+                
+                
+            
+                /*$.ajax({
+                    url:,
+                    method: 'POST,
+                    data: {
+                    
+                        tabla:"",
+                        tabla:""
+                    
+                    }
+                    succes: (result) => {
+                    
+                        console.log(result)
+                    },
+                    error: (xhr, status, error) => {
+                    
+                        console.log(error)
+                    
+                    }
+                    
+                })*/
+            
+            }
+            
+            $(document).ready(() => {                
+            
+                llamada(1)
+                $("#id_planta").change(()=>{
+                    llamada($("#id_planta").val())
+                })                
+                
+            });
+        </script>
+        
+	</head>
+    
+    <body>
+        <div class="Encabezado">
+            <a href="Sensores.html"><img src="images/Logo3.png" class="logo" align="" width="140" height="100"> </a>
+            <h2> Jardin Inteligente</h2>
+            
+        </div>
+        
+        <header>
+            
+            <nav class="menu">
+                <ul>  
+                    <li><a href="Sensores.html">Inicio</a></li>
+                    <li><a href="Plantas.html">Plantas</a></li>
+                    <li><a href="Circuitos.html">Circuitos</a></li>
+                    <div class="custom-select" style="width:200px;">
+                        <select id="id_planta">
+                            <option value="1" selected="selected">Antonio</option>
+                            <option value="2">Manuel</option>
+                        </select>
+                    </div>    
+                </ul>
+            </nav>
+        </header>
+        
+        
+        
+        <div class="info"> 
+            <div class="Subtitulos" >Sensor Luz</div>
+            <div class="recuadros">
+                <div align="center">
+                    <img class="zoom" src="images/luz.png" border="5px" >
+                 </div>  
+            </div>
+
+            <div class="recuadros2">
+                 <div class="graficas">
+                    <canvas id="graficaLuz">
+                        
+                    </canvas>
+                </div>  
+            </div>
+  
+            <div class="recuadros3">
+                <p id="txt1">
+
+                </p>
+            </div>
+        </div>    
+                <div class="info"> 
+            <div class="Subtitulos" >Sensor Humedad en Tierra</div>
+            <div class="recuadros">
+                <div align="center">
+                    <img class="zoom" src="images/humedadT.png" border="5px" >
+                 </div>  
+            </div>
+
+            <div class="recuadros2">
+                 <div class="graficas">
+                    <canvas id="graficaHumT">
+                        
+                    </canvas>
+                </div>  
+            </div>
+  
+            <div class="recuadros3">
+                <p id="txt2">
+
+                </p>
+            </div>
+        </div>    
+                <div class="info"> 
+            <div class="Subtitulos" >Sensor Temperatura</div>
+            <div class="recuadros">
+                <div align="center">
+                    <img class="zoom" src="images/Termometro.png" border="5px" >
+                 </div>  
+            </div>
+
+            <div class="recuadros2">
+                 <div class="graficas">
+                    <canvas id="graficaTemp">
+                        
+                    </canvas>
+                </div>  
+            </div>
+  
+            <div class="recuadros3">
+                <p id="txt3">
+
+                </p>
+            </div>
+        </div>    
+                <div class="info"> 
+            <div class="Subtitulos" >Sensor humedad aire</div>
+            <div class="recuadros">
+                <div align="center">
+                    <img class="zoom" src="images/humedadAire.png" border="5px" >
+                 </div>  
+            </div>
+
+            <div class="recuadros2">
+                 <div class="graficas">
+                    <canvas id="graficaHumA">
+                        
+                    </canvas>
+                </div>  
+            </div>
+  
+            <div class="recuadros3">
+                <p id="txt4">
+                
+                </p>
+            </div>
+        </div>    
+
+        <footer>
+
+           <a href="https://es-la.facebook.com/"> <img src="images/fb.png" align="" width="60" height="60"></a>
+            <a href="https://twitter.com/"> <img src="images/twitter.jpg" align="" width="60" height="60"></a>
+            <p class="text_foot">
+                Antonio Jaime López A01424138 <br>
+                Manuel Camacho Padilla A01423135
+            </p>
+        </footer>
+        
+    </body>
+</html>
